@@ -1,5 +1,7 @@
 package challenge.models;
 
+import java.util.Objects;
+
 /**
  * Classe para mapear o coment�rio da receita no MongoDB
  *
@@ -30,5 +32,18 @@ public class RecipeComment {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RecipeComment that = (RecipeComment) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

@@ -27,8 +27,15 @@ public class RecipeServiceImpl implements RecipeService {
 
 	@Override
 	public void update(String id, Recipe recipe) {
-		recipe.setId(id);
-		repository.save(recipe);
+		Optional<Recipe> aux = repository.findById(id);
+
+		if (aux.isPresent()) {
+			Recipe recipeModificado = aux.get();
+			recipeModificado.setTitle(recipe.getTitle());
+			recipeModificado.setDescription(recipe.getDescription());
+			recipeModificado.setIngredients(recipe.getIngredients());
+			repository.save(recipeModificado);
+		}
 	}
 
 	@Override
@@ -94,19 +101,36 @@ public class RecipeServiceImpl implements RecipeService {
 
 	@Override
 	public void updateComment(String id, String commentId, RecipeComment comment) {
-		Optional<RecipeComment> recipeComment = recipeCommentRepository.findById(commentId);
+		Optional<Recipe> recipe = repository.findById(id);
 
-		if (recipeComment.isPresent()) {
-			RecipeComment aux = recipeComment.get();
-
-			aux.setComment(comment.getComment());
-			recipeCommentRepository.save(aux);
+		if (recipe.isPresent()) {
+			Recipe auxRecipe = recipe.get();
+			comment.setId(commentId);
+			for (RecipeComment recipeComment : auxRecipe.getComments()) {
+				if (recipeComment.equals(comment)) {
+					recipeComment.setComment(comment.getComment());
+					repository.save(auxRecipe);
+				}
+			}
 		}
 	}
 
 	@Override
 	public void deleteComment(String id, String commentId) {
-		recipeCommentRepository.deleteById(commentId);
+		Optional<Recipe> recipe = repository.findById(id);
+
+		if (recipe.isPresent()) {
+			Recipe auxRecipe = recipe.get();
+			List<RecipeComment> listRemover = new ArrayList<>();
+			for (RecipeComment recipeComment : auxRecipe.getComments()) {
+				if(recipeComment.getId().equals(commentId)) {
+					listRemover.add(recipeComment);
+				}
+			}
+
+			auxRecipe.getComments().removeAll(listRemover);
+			repository.save(auxRecipe);
+		}
 	}
 
 }
