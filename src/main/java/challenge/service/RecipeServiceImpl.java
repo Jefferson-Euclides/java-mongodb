@@ -50,12 +50,13 @@ public class RecipeServiceImpl implements RecipeService {
 
 	@Override
 	public List<Recipe> listByIngredient(String ingredient) {
+
 		return repository.findByIngredientsIn(ingredient);
 	}
 
 	@Override
 	public List<Recipe> search(String search) {
-		return repository.findByTitleIgnoreCaseContainingOrDescriptionIgnoreCaseContainingOrderByTitleAsc(search);
+		return repository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrderByTitleAsc(search, search);
 	}
 
 	@Override
